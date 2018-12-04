@@ -41,3 +41,4 @@ rsconnect/
 *.csv
 *.xlsx
 *.DS_Store
+*.pdf
