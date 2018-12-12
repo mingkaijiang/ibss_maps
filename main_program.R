@@ -1,6 +1,7 @@
 ### main program
 source("prepare.R")
 
+library(stringr)
 
 ### read in prec data as background plot
 precDF <- read.table("data/prec_annual.txt", header=F)
@@ -117,3 +118,66 @@ pdf("output/predictability.pdf", width=12,height=8)
 plot_grid(p1, p2, labels="AUTO", ncol=1, align="v", axis="l")
 dev.off()
 
+
+### read in global predictability file
+gpredDF <- read.csv("data/biome_temp_prec_full_1991_2012.csv")
+
+### add cru grid onto wetDF, dtDF and coldDF
+### step 1: round the lat lon and deduct from lat lon
+wetDF$LatC <- as.character(wetDF$Lat)
+test <- strsplit(wetDF$LatC, split = "\\.")
+test2 <-do.call(rbind, test)
+test2 <- data.frame(test2)
+colnames(test2) <- c("lat1", "lat2")
+test2$lat2 <- paste0(".", test2$lat2)
+wetDF <- data.frame(wetDF, test2)
+
+wetDF$LonC <- as.character(wetDF$Lon)
+test <- strsplit(wetDF$LonC, split = "\\.")
+test2 <-do.call(rbind, test)
+test2 <- data.frame(test2)
+colnames(test2) <- c("lon1", "lon2")
+test2$lon2 <- paste0(".", test2$lon2)
+wetDF <- data.frame(wetDF, test2)
+
+wetDF$lat1 <- as.numeric(as.character(wetDF$lat1))
+wetDF$lon1 <- as.numeric(as.character(wetDF$lon1))
+wetDF$lat2 <- as.numeric(as.character(wetDF$lat2))
+wetDF$lon2 <- as.numeric(as.character(wetDF$lon2))
+
+### subsetting negative and positive grids
+wetDF1 <- subset(wetDF, Lat < 0)
+wetDF2 <- subset(wetDF, Lat >= 0)
+
+wetDF1$Latcru <- ifelse(wetDF1$lat2 < 0.25, wetDF1$lat1 + 0.25, 
+                        ifelse(wetDF1$lat2 > 0.75, wetDF1$lat1 - 1.25, wetDF1$lat1 - 0.75))
+wetDF2$Latcru <- ifelse(wetDF2$lat2 < 0.25, wetDF2$lat1 - 0.25, 
+                        ifelse(wetDF2$lat2 >= 0.75, wetDF2$lat1 + 0.75, wetDF2$lat1 + 0.25))
+
+wetDF <- rbind(wetDF1, wetDF2)
+
+wetDF1 <- subset(wetDF, Lon < 0)
+wetDF2 <- subset(wetDF, Lon >= 0)
+wetDF1$Loncru <- ifelse(wetDF1$lon2 < 0.25, wetDF1$lon1 + 0.25, 
+                        ifelse(wetDF1$lon2 > 0.75, wetDF1$lon1 - 1.25, wetDF1$lon1 - 0.75))
+wetDF2$Loncru <- ifelse(wetDF2$lon2 < 0.25, wetDF2$lat1 - 0.25, 
+                        ifelse(wetDF2$lon2 >= 0.75, wetDF2$lon1 + 0.75, wetDF2$lon1 + 0.25))
+wetDF <- rbind(wetDF1, wetDF2)
+
+wetDF <- wetDF[complete.cases(wetDF$Loncru),]
+wetDF <- wetDF[complete.cases(wetDF$Latcru),]
+
+### extract datapoints from gpredDF 
+lon.list <- unique(wetDF$Loncru, na.rm=T)
+lat.list <- unique(wetDF$Latcru, na.rm=T)
+
+plotDF1 <- merge(wetDF,gpredDF,by.x=c("Loncru","Latcru"), by.y=c("lon", "lat"))
+
+### plot precDF wet factor
+p1 <- ggplot() + 
+    geom_tile(data=gpredDF, aes(y=lat, x=lon, fill=precM)) +
+    coord_quickmap(xlim=range(gpredDF$lon), ylim=range(gpredDF$lat))+
+    geom_point(data=wetDF, aes(y=Lat, x=Lon, color=wet_factor))+
+    scale_fill_continuous(name="Contingency", 
+                          type="viridis")+
+    scale_color_gradient2(name="wet factor")
