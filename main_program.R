@@ -181,3 +181,15 @@ p1 <- ggplot() +
     scale_fill_continuous(name="Contingency", 
                           type="viridis")+
     scale_color_gradient2(name="wet factor")
+
+p2 <- ggplot() +
+    geom_point(data=plotDF1, aes(y=wet_factor, x=precM))
+
+
+pdf("output/wet_factor_contingency_spatial.pdf")
+plot(p1)
+dev.off()
+
+pdf("output/wet_factor_contingency_correlation.pdf")
+plot(p2)
+dev.off()
