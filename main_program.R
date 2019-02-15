@@ -183,7 +183,7 @@ p1 <- ggplot() +
     scale_color_gradient2(name="wet factor")
 
 p2 <- ggplot() +
-    geom_point(data=plotDF1, aes(y=wet_factor, x=precM))
+    geom_point(data=plotDF1, aes(y=wet_factor, x=prec_annual_mean))
 
 
 pdf("output/wet_factor_contingency_spatial.pdf")
