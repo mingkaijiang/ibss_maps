@@ -77,6 +77,9 @@ colnames(tairDF) <- c("Lon", "Lat", "tair")
 coldDF <- read.table("data/factors_to_plot_cold.txt", header=F)
 colnames(coldDF) <- c("SCCSID", "Lat", "Lon", "cold")
 
+warmDF <- read.table("data/warm_factor_plot.txt", header=F)
+colnames(warmDF) <- c("SCCSID", "Lat", "Lon", "warm")
+
 ### plot tair cold
 p1 <- ggplot() + 
     geom_tile(data=tairDF, aes(y=Lat, x=Lon, fill=tair)) +
@@ -86,9 +89,17 @@ p1 <- ggplot() +
                           type="viridis")+
     scale_color_gradient2(name="Cold factor")
 
+p2 <- ggplot() + 
+    geom_tile(data=tairDF, aes(y=Lat, x=Lon, fill=tair)) +
+    coord_quickmap(xlim=range(tairDF$Lon), ylim=range(tairDF$Lat))+
+    geom_point(data=warmDF, aes(y=Lat, x=Lon, color=warm))+
+    scale_fill_continuous(name="Temperature (degree)", 
+                          type="viridis")+
+    scale_color_gradient2(name="Warm factor")
 
-pdf("output/cold_factor.pdf", width=12,height=6)
-plot(p1)
+
+pdf("output/cold_warm_factor.pdf", width=12,height=8)
+plot_grid(p1, p2, labels="AUTO", ncol=1, align="v", axis="l")
 dev.off()
 
 
