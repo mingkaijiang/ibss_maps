@@ -13,7 +13,8 @@ pacman::p_load(dplyr,
                cowplot,
                viridis,
                fields,
-               grid)    
+               grid,
+               directlabels)    
 
 
 #### Sourcing all R files in the modules subdirectory

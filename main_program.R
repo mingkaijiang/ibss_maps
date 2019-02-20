@@ -36,6 +36,25 @@ wetDF$wet_abs_cat <- ifelse(wetDF$wet_abs <= -2, 1,
                                                  ifelse(wetDF$wet_abs > 0.1 & wetDF$wet_abs <= 1, 5, 
                                                         ifelse(wetDF$wet_abs > 1 & wetDF$wet_abs <= 2, 6, 7))))))
 
+
+### read in elevation data
+elevDF <- read.table("data/crutbaselv.txt", header=F, sep=",")
+colnames(elevDF) <- c("Lon", "Lat", "label", "elev", "elev2", "region")
+
+
+#p<- ggplot(aes(x=Lon, y=Lat, z=elev2), data = elevDF) + 
+#    geom_raster(data=elevDF, aes(fill=elev2), show.legend = TRUE) +
+#    scale_fill_gradient(limits=range(elevDF$elev2), high = 'white', low = 'red') + 
+#    geom_contour(aes(colour = ..level..)) +
+#    scale_colour_gradient(guide = 'none') 
+#
+#p1 = direct.label(p, list("bottom.pieces", colour='black'))
+#
+#plot(p1)
+
+
+
+
 p1 <- ggplot() + 
     geom_tile(data=precDF, aes(y=Lat, x=Lon, fill=as.character(precDF$prec_cat))) +
     coord_quickmap(xlim=range(precDF$Lon), ylim=range(precDF$Lat))+
