@@ -7,39 +7,83 @@ library(stringr)
 precDF <- read.table("data/prec_annual.txt", header=F)
 colnames(precDF) <- c("Lon", "Lat", "prec")
 
+precDF$prec_cat <- ifelse(precDF$prec <= 100, 1, 
+                          ifelse(precDF$prec > 100 & precDF$prec <= 500, 2,
+                                 ifelse(precDF$prec > 500 & precDF$prec <= 2000, 3, 
+                                        ifelse(precDF$prec > 2000 & precDF$prec <= 4000, 4, 5))))
+
 ### read in wet factors
 wetDF <- read.csv("data/wet_factor_fixed_plot.csv")
 colnames(wetDF) <- c("SCCSID", "Lat", "Lon", "wet_factor", "wet_pct", "wet_abs")
+wetDF$wet_factor_cat <- ifelse(wetDF$wet_factor <= -2, 1, 
+                          ifelse(wetDF$wet_factor > -2 & wetDF$wet_factor <= -1, 2,
+                                 ifelse(wetDF$wet_factor > -1 & wetDF$wet_factor <= -0.1, 3, 
+                                        ifelse(wetDF$wet_factor > -0.1 & wetDF$wet_factor <= 0.1, 4, 
+                                               ifelse(wetDF$wet_factor > 0.1 & wetDF$wet_factor <= 1, 5, 
+                                                      ifelse(wetDF$wet_factor > 1 & wetDF$wet_factor <= 2, 6, 7))))))
 
-### plot precDF wet factor
+wetDF$wet_pct_cat <- ifelse(wetDF$wet_pct <= -2, 1, 
+                               ifelse(wetDF$wet_pct > -2 & wetDF$wet_pct <= -1, 2,
+                                      ifelse(wetDF$wet_pct > -1 & wetDF$wet_pct <= -0.1, 3, 
+                                             ifelse(wetDF$wet_pct > -0.1 & wetDF$wet_pct <= 0.1, 4, 
+                                                    ifelse(wetDF$wet_pct > 0.1 & wetDF$wet_pct <= 1, 5, 
+                                                           ifelse(wetDF$wet_pct > 1 & wetDF$wet_pct <= 2, 6, 7))))))
+
+wetDF$wet_abs_cat <- ifelse(wetDF$wet_abs <= -2, 1, 
+                            ifelse(wetDF$wet_abs > -2 & wetDF$wet_abs <= -1, 2,
+                                   ifelse(wetDF$wet_abs > -1 & wetDF$wet_abs <= -0.1, 3, 
+                                          ifelse(wetDF$wet_abs > -0.1 & wetDF$wet_abs <= 0.1, 4, 
+                                                 ifelse(wetDF$wet_abs > 0.1 & wetDF$wet_abs <= 1, 5, 
+                                                        ifelse(wetDF$wet_abs > 1 & wetDF$wet_abs <= 2, 6, 7))))))
+
 p1 <- ggplot() + 
-    geom_tile(data=precDF, aes(y=Lat, x=Lon, fill=prec)) +
+    geom_tile(data=precDF, aes(y=Lat, x=Lon, fill=as.character(precDF$prec_cat))) +
     coord_quickmap(xlim=range(precDF$Lon), ylim=range(precDF$Lat))+
-    geom_point(data=wetDF, aes(y=Lat, x=Lon, color=wet_factor))+
-    scale_fill_continuous(name="Rainfall (mm/yr)", 
-                          type="viridis")+
-    scale_color_gradient2(name="Wet factor")
+    geom_point(data=wetDF, aes(y=Lat, x=Lon, color=as.character(wetDF$wet_factor_cat)))+
+    scale_fill_manual(name="Rainfall (mm/yr)", 
+                      values=c("light blue", "skyblue", "royalblue1", "blue", "dark blue"),
+                      label=c("0-100", "100-500", "500-2000", "2000-4000", ">4000"))+
+    scale_color_manual(name="Wet factor", 
+                       values=c("purple4", "purple1", "slateblue1", "thistle1", "indianred1",
+                                "indianred3","indianred4"),
+                       label=c("< -2", "-2 to -1", "-1 to -0.1", "-0.1 to 0.1", 
+                               "0.1 to 1", "1 to 2", "> 2"))+
+    theme(legend.position="none")
+
 
 p2 <- ggplot() + 
-    geom_tile(data=precDF, aes(y=Lat, x=Lon, fill=prec)) +
+    geom_tile(data=precDF, aes(y=Lat, x=Lon, fill=as.character(precDF$prec_cat))) +
     coord_quickmap(xlim=range(precDF$Lon), ylim=range(precDF$Lat))+
-    geom_point(data=wetDF, aes(y=Lat, x=Lon, color=wet_pct))+
-    scale_fill_continuous(name="Rainfall (mm/yr)", 
-                          type="viridis")+
-    scale_color_gradient2(name="Wet Extremes - percentile")
+    geom_point(data=wetDF, aes(y=Lat, x=Lon, color=as.character(wetDF$wet_pct_cat)))+
+    scale_fill_manual(name="Rainfall (mm/yr)", 
+                      values=c("light blue", "skyblue", "royalblue1", "blue", "dark blue"),
+                      label=c("0-100", "100-500", "500-2000", "2000-4000", ">4000"))+
+    scale_color_manual(name="Wet extreme - percentile", 
+                       values=c("purple4", "purple1", "slateblue1", "thistle1", "indianred1",
+                                "indianred3","indianred4"),
+                       label=c("< -2", "-2 to -1", "-1 to -0.1", "-0.1 to 0.1", 
+                               "0.1 to 1", "1 to 2", "> 2"))+
+    theme(legend.position="none")
 
 p3 <- ggplot() + 
-    geom_tile(data=precDF, aes(y=Lat, x=Lon, fill=prec)) +
+    geom_tile(data=precDF, aes(y=Lat, x=Lon, fill=as.character(precDF$prec_cat))) +
     coord_quickmap(xlim=range(precDF$Lon), ylim=range(precDF$Lat))+
-    geom_point(data=wetDF, aes(y=Lat, x=Lon, color=wet_abs))+
-    scale_fill_continuous(name="Rainfall (mm/yr)", 
-                          type="viridis")+
-    scale_color_gradient2(name="Wet Extremes - absolute")
-
-#plot(p2)
+    geom_point(data=wetDF, aes(y=Lat, x=Lon, color=as.character(wetDF$wet_abs_cat)))+
+    scale_fill_manual(name="Rainfall (mm/yr)", 
+                      values=c("light blue", "skyblue", "royalblue1", "blue", "dark blue"),
+                      label=c("0-100", "100-500", "500-2000", "2000-4000", ">4000"))+
+    scale_color_manual(name="Wet extreme - absolute", 
+                       values=c("purple4", "purple1", "slateblue1", "thistle1", "indianred1",
+                                "indianred3","indianred4"),
+                       label=c("< -2", "-2 to -1", "-1 to -0.1", "-0.1 to 0.1", 
+                               "0.1 to 1", "1 to 2", "> 2"))+
+    theme(legend.position="bottom")+
+    guides(fill=guide_legend(nrow=3))
 
 pdf("output/wet_factors.pdf", width=12,height=10)
-plot_grid(p1, p2, p3, labels="AUTO", ncol=1, align="v", axis="l")
+plot_grid(p1, p2, p3, labels="AUTO", 
+          rel_heights=c(1,1,1.3),
+          ncol=1, align="v", axis="l")
 dev.off()
 
 
@@ -47,23 +91,43 @@ dev.off()
 dtDF <- read.table("data/indices_to_plot_drought.txt", header=F)
 colnames(dtDF) <- c("SCCSID", "Lat", "Lon", "PE", "PDSI")
 
+dtDF$PE_cat <- ifelse(dtDF$PE <= -0.3, 1, 
+                      ifelse(dtDF$PE > -0.3 & dtDF$PE <= -0.1, 2, 
+                             ifelse(dtDF$PE > -0.1 & dtDF$PE <= 0.1, 3, 
+                                    ifelse(dtDF$PE > 0.1 & dtDF$PE <= 0.3, 4, 5))))
+
+dtDF$PDSI_cat <- ifelse(dtDF$PDSI <= -2, 1, 
+                               ifelse(dtDF$PDSI > -2 & dtDF$PDSI <= -1, 2,
+                                      ifelse(dtDF$PDSI > -1 & dtDF$PDSI <= -0.1, 3, 
+                                             ifelse(dtDF$PDSI > -0.1 & dtDF$PDSI <= 0.1, 4, 
+                                                    ifelse(dtDF$PDSI > 0.1 & dtDF$PDSI <= 1, 5, 
+                                                           ifelse(dtDF$PDSI > 1 & dtDF$PDSI <= 2, 6, 7))))))
+
 ### plot precDF wet factor
 p1 <- ggplot() + 
-    geom_tile(data=precDF, aes(y=Lat, x=Lon, fill=prec)) +
+    geom_tile(data=precDF, aes(y=Lat, x=Lon, fill=as.character(precDF$prec_cat))) +
     coord_quickmap(xlim=range(precDF$Lon), ylim=range(precDF$Lat))+
-    geom_point(data=dtDF, aes(y=Lat, x=Lon, color=PE))+
-    scale_fill_continuous(name="Rainfall (mm/yr)", 
-                          type="viridis")+
-    scale_color_gradient2(name="PE")
-
+    geom_point(data=dtDF, aes(y=Lat, x=Lon, color=as.character(dtDF$PE_cat)))+
+    scale_fill_manual(name="Rainfall (mm/yr)", 
+                      values=c("light blue", "skyblue", "royalblue1", "blue", "dark blue"),
+                      label=c("0-100", "100-500", "500-2000", "2000-4000", ">4000"))+
+    scale_color_manual(name="PE", 
+                       values=c("purple4",  "slateblue1", "thistle1", "indianred1",
+                                "indianred4"),
+                       label=c("< -0.3", "-0.3 to -0.1", "-0.1 to 0.1", 
+                               "0.1 to 0.3", "> 0.3"))
 p2 <- ggplot() + 
-    geom_tile(data=precDF, aes(y=Lat, x=Lon, fill=prec)) +
+    geom_tile(data=precDF, aes(y=Lat, x=Lon, fill=as.character(precDF$prec_cat))) +
     coord_quickmap(xlim=range(precDF$Lon), ylim=range(precDF$Lat))+
-    geom_point(data=dtDF, aes(y=Lat, x=Lon, color=PDSI))+
-    scale_fill_continuous(name="Rainfall (mm/yr)", 
-                          type="viridis")+
-    scale_color_gradient2(name="PDSI")
-
+    geom_point(data=dtDF, aes(y=Lat, x=Lon, color=as.character(dtDF$PDSI_cat)))+
+    scale_fill_manual(name="Rainfall (mm/yr)", 
+                      values=c("light blue", "skyblue", "royalblue1", "blue", "dark blue"),
+                      label=c("0-100", "100-500", "500-2000", "2000-4000", ">4000"))+
+    scale_color_manual(name="PDSI", 
+                       values=c("purple4", "purple1", "slateblue1", "thistle1", "indianred1",
+                                "indianred3","indianred4"),
+                       label=c("< -2", "-2 to -1", "-1 to -0.1", "-0.1 to 0.1", 
+                               "0.1 to 1", "1 to 2", "> 2"))
 #plot(p2)
 
 pdf("output/drought_indices.pdf", width=12,height=8)
@@ -109,19 +173,21 @@ colnames(predDF) <- c("SCCSID", "Lat", "Lon", "dry", "wet")
 
 ### plot precDF wet factor
 p1 <- ggplot() + 
-    geom_tile(data=precDF, aes(y=Lat, x=Lon, fill=prec)) +
+    geom_tile(data=precDF, aes(y=Lat, x=Lon, fill=as.character(precDF$prec_cat))) +
     coord_quickmap(xlim=range(precDF$Lon), ylim=range(precDF$Lat))+
     geom_point(data=predDF, aes(y=Lat, x=Lon, color=dry))+
-    scale_fill_continuous(name="Rainfall (mm/yr)", 
-                          type="viridis")+
+    scale_fill_manual(name="Rainfall (mm/yr)", 
+                      values=c("light blue", "skyblue", "royalblue1", "blue", "dark blue"),
+                      label=c("0-100", "100-500", "500-2000", "2000-4000", ">4000"))+
     scale_color_gradient2(name="dry predictability")
 
 p2 <- ggplot() + 
-    geom_tile(data=precDF, aes(y=Lat, x=Lon, fill=prec)) +
+    geom_tile(data=precDF, aes(y=Lat, x=Lon, fill=as.character(precDF$prec_cat))) +
     coord_quickmap(xlim=range(precDF$Lon), ylim=range(precDF$Lat))+
     geom_point(data=predDF, aes(y=Lat, x=Lon, color=wet))+
-    scale_fill_continuous(name="Rainfall (mm/yr)", 
-                          type="viridis")+
+    scale_fill_manual(name="Rainfall (mm/yr)", 
+                      values=c("light blue", "skyblue", "royalblue1", "blue", "dark blue"),
+                      label=c("0-100", "100-500", "500-2000", "2000-4000", ">4000"))+
     scale_color_gradient2(name="wet predictability")
 
 
