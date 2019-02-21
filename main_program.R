@@ -41,20 +41,37 @@ wetDF$wet_abs_cat <- ifelse(wetDF$wet_abs <= -2, 1,
 elevDF <- read.table("data/crutbaselv.txt", header=F, sep=",")
 colnames(elevDF) <- c("Lon", "Lat", "label", "elev", "elev2", "region")
 
-
-#p<- ggplot(aes(x=Lon, y=Lat, z=elev2), data = elevDF) + 
-#    geom_raster(data=elevDF, aes(fill=elev2), show.legend = TRUE) +
-#    scale_fill_gradient(limits=range(elevDF$elev2), high = 'white', low = 'red') + 
-#    geom_contour(aes(colour = ..level..)) +
-#    scale_colour_gradient(guide = 'none') 
-#
-#p1 = direct.label(p, list("bottom.pieces", colour='black'))
-#
-#plot(p1)
+elevDF$elev_cat <- ifelse(elevDF$elev2 <= 200, 1, 
+                              ifelse(elevDF$elev2 > 200 & elevDF$elev2 <= 500, 2,
+                                     ifelse(elevDF$elev2 > 500 & elevDF$elev2 <= 1000, 3, 
+                                            ifelse(elevDF$elev2 > 1000 & elevDF$elev2 <= 3000, 6, 7))))
 
 
+### read enso data
+### 2.5 degree resolution, ascii file
+enso <- read.table("data/enso.txt", header=F)
 
+# creat lon and lat list
+lon.list <- seq(-178.75, 178.75, by=2.5)
+lat.list <- rev(seq(-88.75, 88.75, by=2.5))
 
+ensoDF <- data.frame(rep(lon.list, each=length(lat.list)),
+                     rep(lat.list, times=length(lon.list)),
+                     NA)
+colnames(ensoDF) <- c("Lon", "Lat", "enso")
+
+for (i in 1:length(lon.list)) {
+    for (j in 1:length(lat.list)) {
+        ensoDF[ensoDF$Lon == lon.list[i] & ensoDF$Lat == lat.list[j], "enso"] <- enso[i,j]
+    }
+}
+
+ensoDF$enso_cat <- ifelse(ensoDF$enso >-1 &ensoDF$enso <= -0.5, 1, 
+                          ifelse(ensoDF$enso > -0.5 & ensoDF$enso <= -0.1, 2,
+                                 ifelse(ensoDF$enso > -0.1 & ensoDF$enso <= 0.1, 3, 
+                                        ifelse(ensoDF$enso > 0.1 & ensoDF$enso <= 0.5, 4, 5))))
+
+### plotting
 p1 <- ggplot() + 
     geom_tile(data=precDF, aes(y=Lat, x=Lon, fill=as.character(precDF$prec_cat))) +
     coord_quickmap(xlim=range(precDF$Lon), ylim=range(precDF$Lat))+
@@ -67,41 +84,48 @@ p1 <- ggplot() +
                                 "indianred3","indianred4"),
                        label=c("< -2", "-2 to -1", "-1 to -0.1", "-0.1 to 0.1", 
                                "0.1 to 1", "1 to 2", "> 2"))+
-    theme(legend.position="none")
+    theme(legend.position="right")+
+    guides(fill=guide_legend(nrow=3), color=guide_legend(nrow=3))
 
 
 p2 <- ggplot() + 
-    geom_tile(data=precDF, aes(y=Lat, x=Lon, fill=as.character(precDF$prec_cat))) +
+    #geom_tile(data=precDF, aes(y=Lat, x=Lon, fill=as.character(precDF$prec_cat))) +
+    geom_tile(data=ensoDF, aes(y=Lat, x=Lon, fill=as.character(ensoDF$enso_cat))) +
+    
     coord_quickmap(xlim=range(precDF$Lon), ylim=range(precDF$Lat))+
     geom_point(data=wetDF, aes(y=Lat, x=Lon, color=as.character(wetDF$wet_pct_cat)))+
-    scale_fill_manual(name="Rainfall (mm/yr)", 
+    scale_fill_manual(name="ENSO index", 
                       values=c("light blue", "skyblue", "royalblue1", "blue", "dark blue"),
-                      label=c("0-100", "100-500", "500-2000", "2000-4000", ">4000"))+
+                      label=c("-1 to -0.5", "-0.5 to -0.1", "-0.1 to 0.1", "0.1 to 0.5", "0.5 to 1"))+
     scale_color_manual(name="Wet extreme - percentile", 
                        values=c("purple4", "purple1", "slateblue1", "thistle1", "indianred1",
                                 "indianred3","indianred4"),
                        label=c("< -2", "-2 to -1", "-1 to -0.1", "-0.1 to 0.1", 
                                "0.1 to 1", "1 to 2", "> 2"))+
-    theme(legend.position="none")
+    theme(legend.position="right")+
+    borders(colour = "lightgrey", lwd=0.1)+
+    guides(fill=guide_legend(nrow=3), color=guide_legend(nrow=3))
+
 
 p3 <- ggplot() + 
-    geom_tile(data=precDF, aes(y=Lat, x=Lon, fill=as.character(precDF$prec_cat))) +
+    #geom_tile(data=precDF, aes(y=Lat, x=Lon, fill=as.character(precDF$prec_cat))) +
+    geom_tile(data=elevDF, aes(y=Lat, x=Lon, fill=as.character(elevDF$elev_cat))) +
     coord_quickmap(xlim=range(precDF$Lon), ylim=range(precDF$Lat))+
     geom_point(data=wetDF, aes(y=Lat, x=Lon, color=as.character(wetDF$wet_abs_cat)))+
-    scale_fill_manual(name="Rainfall (mm/yr)", 
+    scale_fill_manual(name="Elevation (m)", 
                       values=c("light blue", "skyblue", "royalblue1", "blue", "dark blue"),
-                      label=c("0-100", "100-500", "500-2000", "2000-4000", ">4000"))+
+                      label=c("0-200", "200-500", "500-1000", "1000-3000", ">3000"))+
     scale_color_manual(name="Wet extreme - absolute", 
                        values=c("purple4", "purple1", "slateblue1", "thistle1", "indianred1",
                                 "indianred3","indianred4"),
                        label=c("< -2", "-2 to -1", "-1 to -0.1", "-0.1 to 0.1", 
                                "0.1 to 1", "1 to 2", "> 2"))+
-    theme(legend.position="bottom")+
-    guides(fill=guide_legend(nrow=3))
+    theme(legend.position="right")+
+    guides(fill=guide_legend(nrow=3), color=guide_legend(nrow=3))
 
 pdf("output/wet_factors.pdf", width=12,height=10)
 plot_grid(p1, p2, p3, labels="AUTO", 
-          rel_heights=c(1,1,1.3),
+          #rel_heights=c(1,1,1.3),
           ncol=1, align="v", axis="l")
 dev.off()
 
