@@ -75,7 +75,7 @@ ensoDF$enso_cat <- ifelse(ensoDF$enso >-1 &ensoDF$enso <= -0.5, 1,
 p1 <- ggplot() + 
     geom_tile(data=precDF, aes(y=Lat, x=Lon, fill=as.character(precDF$prec_cat))) +
     coord_quickmap(xlim=range(precDF$Lon), ylim=range(precDF$Lat))+
-    geom_point(data=wetDF, aes(y=Lat, x=Lon, color=as.character(wetDF$wet_factor_cat)))+
+    geom_point(data=wetDF, aes(y=Lat, x=Lon, color=as.character(wetDF$wet_factor_cat)), size=3)+
     scale_fill_manual(name="Rainfall (mm/yr)", 
                       values=alpha(c("indianred4", "indianred1","thistle1", "skyblue", "blue"),0.2),
                       label=c("0-100", "100-500", "500-2000", "2000-4000", ">4000"))+
@@ -91,8 +91,8 @@ p1 <- ggplot() +
 p2 <- ggplot() + 
     geom_tile(data=ensoDF, aes(y=Lat, x=Lon, fill=as.character(ensoDF$enso_cat))) +
     coord_quickmap(xlim=range(precDF$Lon), ylim=range(precDF$Lat))+
-    borders(colour = alpha("lightgrey", 1), lwd=0.2)+
-    geom_point(data=wetDF, aes(y=Lat, x=Lon, color=as.character(wetDF$wet_pct_cat)))+
+    borders(colour = alpha("black", 0.8), lwd=0.2)+
+    geom_point(data=wetDF, aes(y=Lat, x=Lon, color=as.character(wetDF$wet_pct_cat)), size=3)+
     scale_fill_manual(name="ENSO index", 
                       values=alpha(c("indianred4", "indianred1","thistle1","skyblue","blue"),0.2),
                       label=c("-1 to -0.5", "-0.5 to -0.1", "-0.1 to 0.1", "0.1 to 0.5", "0.5 to 1"))+
@@ -107,7 +107,7 @@ p2 <- ggplot() +
 p3 <- ggplot() + 
     geom_tile(data=elevDF, aes(y=Lat, x=Lon, fill=as.character(elevDF$elev_cat))) +
     coord_quickmap(xlim=range(precDF$Lon), ylim=range(precDF$Lat))+
-    geom_point(data=wetDF, aes(y=Lat, x=Lon, color=as.character(wetDF$wet_abs_cat)))+
+    geom_point(data=wetDF, aes(y=Lat, x=Lon, color=as.character(wetDF$wet_abs_cat)), size=3)+
     scale_fill_manual(name="Elevation (m)", 
                       values=alpha(c("indianred4", "indianred1","thistle1", "skyblue", "blue"),0.2),
                       label=c("0-200", "200-500", "500-1000", "1000-3000", ">3000"))+
@@ -146,7 +146,7 @@ dtDF$PDSI_cat <- ifelse(dtDF$PDSI <= -2, 1,
 p1 <- ggplot() + 
     geom_tile(data=precDF, aes(y=Lat, x=Lon, fill=as.character(precDF$prec_cat))) +
     coord_quickmap(xlim=range(precDF$Lon), ylim=range(precDF$Lat))+
-    geom_point(data=dtDF, aes(y=Lat, x=Lon, color=as.character(dtDF$PE_cat)))+
+    geom_point(data=dtDF, aes(y=Lat, x=Lon, color=as.character(dtDF$PE_cat)), size=3)+
     scale_fill_manual(name="Rainfall (mm/yr)", 
                       values=alpha(c("indianred4", "indianred1","thistle1", "skyblue", "blue"),0.2),
                       label=c("0-100", "100-500", "500-2000", "2000-4000", ">4000"))+
@@ -159,9 +159,9 @@ p1 <- ggplot() +
 
 p2 <- ggplot() + 
     geom_tile(data=ensoDF, aes(y=Lat, x=Lon, fill=as.character(ensoDF$enso_cat))) +
-    borders(colour = alpha("lightgrey", 1), lwd=0.2)+
+    borders(colour = alpha("black", 0.8), lwd=0.2)+
     coord_quickmap(xlim=range(precDF$Lon), ylim=range(precDF$Lat))+
-    geom_point(data=dtDF, aes(y=Lat, x=Lon, color=as.character(dtDF$PDSI_cat)))+
+    geom_point(data=dtDF, aes(y=Lat, x=Lon, color=as.character(dtDF$PDSI_cat)), size=3)+
     scale_fill_manual(name="ENSO index", 
                       values=alpha(c("indianred4", "indianred1","thistle1","skyblue","blue"),0.2),
                       label=c("-1 to -0.5", "-0.5 to -0.1", "-0.1 to 0.1", "0.1 to 0.5", "0.5 to 1"))+
@@ -191,7 +191,7 @@ colnames(warmDF) <- c("SCCSID", "Lat", "Lon", "warm")
 p1 <- ggplot() + 
     geom_tile(data=tairDF, aes(y=Lat, x=Lon, fill=tair), alpha=0.5) +
     coord_quickmap(xlim=range(tairDF$Lon), ylim=range(tairDF$Lat))+
-    geom_point(data=coldDF, aes(y=Lat, x=Lon, color=cold))+
+    geom_point(data=coldDF, aes(y=Lat, x=Lon, color=cold),size=3)+
     scale_fill_continuous(name="Temperature (degree)", 
                           type="viridis")+
     scale_color_gradient2(name="Cold factor", 
@@ -200,7 +200,7 @@ p1 <- ggplot() +
 p2 <- ggplot() + 
     geom_tile(data=tairDF, aes(y=Lat, x=Lon, fill=tair), alpha=0.5) +
     coord_quickmap(xlim=range(tairDF$Lon), ylim=range(tairDF$Lat))+
-    geom_point(data=warmDF, aes(y=Lat, x=Lon, color=warm))+
+    geom_point(data=warmDF, aes(y=Lat, x=Lon, color=warm),size=3)+
     scale_fill_continuous(name="Temperature (degree)", 
                           type="viridis")+
     scale_color_gradient2(name="Warm factor", 
@@ -220,7 +220,7 @@ colnames(predDF) <- c("SCCSID", "Lat", "Lon", "dry", "wet")
 p1 <- ggplot() + 
     geom_tile(data=precDF, aes(y=Lat, x=Lon, fill=as.character(precDF$prec_cat))) +
     coord_quickmap(xlim=range(precDF$Lon), ylim=range(precDF$Lat))+
-    geom_point(data=predDF, aes(y=Lat, x=Lon, color=dry))+
+    geom_point(data=predDF, aes(y=Lat, x=Lon, color=dry),size=3)+
     scale_fill_manual(name="Rainfall (mm/yr)", 
                       values=alpha(c("indianred4", "indianred1","thistle1", "skyblue", "blue"),0.2),
                       label=c("0-100", "100-500", "500-2000", "2000-4000", ">4000"))+
@@ -230,14 +230,13 @@ p1 <- ggplot() +
 p2 <- ggplot() + 
     geom_tile(data=ensoDF, aes(y=Lat, x=Lon, fill=as.character(ensoDF$enso_cat))) +
     coord_quickmap(xlim=range(precDF$Lon), ylim=range(precDF$Lat))+
-    borders(colour = alpha("lightgrey", 1), lwd=0.2)+
-    geom_point(data=predDF, aes(y=Lat, x=Lon, color=wet))+
+    borders(colour = alpha("black", 0.8), lwd=0.2)+
+    geom_point(data=predDF, aes(y=Lat, x=Lon, color=wet),size=3)+
     scale_fill_manual(name="ENSO index", 
                       values=alpha(c("indianred4", "indianred1","thistle1","skyblue","blue"),0.2),
                       label=c("-1 to -0.5", "-0.5 to -0.1", "-0.1 to 0.1", "0.1 to 0.5", "0.5 to 1"))+
     scale_color_gradient2(name="wet predictability",
                           low="red", high="blue")
-
 
 pdf("output/predictability.pdf", width=12,height=8)
 plot_grid(p1, p2, labels="AUTO", ncol=1, align="v", axis="l")
@@ -249,7 +248,7 @@ wetDF$diff <- with(wetDF, wet_abs-wet_pct)
 
 p1 <- ggplot() + 
     coord_quickmap(xlim=range(precDF$Lon), ylim=range(precDF$Lat))+
-    borders(colour = alpha("lightgrey", 0.8), lwd=0.1)+
+    borders(colour = alpha("black", 0.8), lwd=0.2)+
     geom_point(data=wetDF, aes(y=Lat, x=Lon, color=diff))+
     theme(legend.position="right")+
     scale_color_gradient2(name="wet extreme difference",
