@@ -236,7 +236,7 @@ p2 <- ggplot() +
                       values=alpha(c("indianred4", "indianred1","thistle1","skyblue","blue"),0.2),
                       label=c("-1 to -0.5", "-0.5 to -0.1", "-0.1 to 0.1", "0.1 to 0.5", "0.5 to 1"))+
     scale_color_gradient2(name="wet predictability",
-                          low="blue", high="red")
+                          low="red", high="blue")
 
 
 pdf("output/predictability.pdf", width=12,height=8)
