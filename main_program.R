@@ -91,7 +91,7 @@ p1 <- ggplot() +
 p2 <- ggplot() + 
     geom_tile(data=ensoDF, aes(y=Lat, x=Lon, fill=as.character(ensoDF$enso_cat))) +
     coord_quickmap(xlim=range(precDF$Lon), ylim=range(precDF$Lat))+
-    borders(colour = alpha("lightgrey", 0.8), lwd=0.1)+
+    borders(colour = alpha("lightgrey", 1), lwd=0.2)+
     geom_point(data=wetDF, aes(y=Lat, x=Lon, color=as.character(wetDF$wet_pct_cat)))+
     scale_fill_manual(name="ENSO index", 
                       values=alpha(c("indianred4", "indianred1","thistle1","skyblue","blue"),0.2),
@@ -159,7 +159,7 @@ p1 <- ggplot() +
 
 p2 <- ggplot() + 
     geom_tile(data=ensoDF, aes(y=Lat, x=Lon, fill=as.character(ensoDF$enso_cat))) +
-    borders(colour = alpha("lightgrey", 0.8), lwd=0.1)+
+    borders(colour = alpha("lightgrey", 1), lwd=0.2)+
     coord_quickmap(xlim=range(precDF$Lon), ylim=range(precDF$Lat))+
     geom_point(data=dtDF, aes(y=Lat, x=Lon, color=as.character(dtDF$PDSI_cat)))+
     scale_fill_manual(name="ENSO index", 
@@ -230,7 +230,7 @@ p1 <- ggplot() +
 p2 <- ggplot() + 
     geom_tile(data=ensoDF, aes(y=Lat, x=Lon, fill=as.character(ensoDF$enso_cat))) +
     coord_quickmap(xlim=range(precDF$Lon), ylim=range(precDF$Lat))+
-    borders(colour = alpha("lightgrey", 0.8), lwd=0.1)+
+    borders(colour = alpha("lightgrey", 1), lwd=0.2)+
     geom_point(data=predDF, aes(y=Lat, x=Lon, color=wet))+
     scale_fill_manual(name="ENSO index", 
                       values=alpha(c("indianred4", "indianred1","thistle1","skyblue","blue"),0.2),
