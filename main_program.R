@@ -94,7 +94,7 @@ p2 <- ggplot() +
     borders(colour = alpha("lightgrey", 0.8), lwd=0.1)+
     geom_point(data=wetDF, aes(y=Lat, x=Lon, color=as.character(wetDF$wet_pct_cat)))+
     scale_fill_manual(name="ENSO index", 
-                      values=alpha(c("blue", "skyblue", "thistle1", "indianred1", "indianred4"),0.2),
+                      values=alpha(c("indianred4", "indianred1","thistle1","skyblue","blue"),0.2),
                       label=c("-1 to -0.5", "-0.5 to -0.1", "-0.1 to 0.1", "0.1 to 0.5", "0.5 to 1"))+
     scale_color_manual(name="Wet extreme - percentile", 
                        values=c("indianred4", "indianred3", "indianred1","thistle1", 
@@ -163,7 +163,7 @@ p2 <- ggplot() +
     coord_quickmap(xlim=range(precDF$Lon), ylim=range(precDF$Lat))+
     geom_point(data=dtDF, aes(y=Lat, x=Lon, color=as.character(dtDF$PDSI_cat)))+
     scale_fill_manual(name="ENSO index", 
-                      values=alpha(c("blue", "skyblue", "thistle1", "indianred1", "indianred4"),0.2),
+                      values=alpha(c("indianred4", "indianred1","thistle1","skyblue","blue"),0.2),
                       label=c("-1 to -0.5", "-0.5 to -0.1", "-0.1 to 0.1", "0.1 to 0.5", "0.5 to 1"))+
     scale_color_manual(name="PDSI", 
                        values=c("indianred4", "indianred3", "indianred1","thistle1", 
@@ -172,7 +172,6 @@ p2 <- ggplot() +
                                "0.1 to 1", "1 to 2", "> 2"))+
     guides(fill=guide_legend(nrow=3), color=guide_legend(nrow=3))
 
-plot(p2)
 
 pdf("output/drought_indices.pdf", width=12,height=8)
 plot_grid(p1, p2, labels="AUTO", ncol=1, align="v", axis="l")
@@ -234,7 +233,7 @@ p2 <- ggplot() +
     borders(colour = alpha("lightgrey", 0.8), lwd=0.1)+
     geom_point(data=predDF, aes(y=Lat, x=Lon, color=wet))+
     scale_fill_manual(name="ENSO index", 
-                      values=alpha(c("blue", "skyblue", "thistle1", "indianred1", "indianred4"),0.2),
+                      values=alpha(c("indianred4", "indianred1","thistle1","skyblue","blue"),0.2),
                       label=c("-1 to -0.5", "-0.5 to -0.1", "-0.1 to 0.1", "0.1 to 0.5", "0.5 to 1"))+
     scale_color_gradient2(name="wet predictability",
                           low="blue", high="red")
