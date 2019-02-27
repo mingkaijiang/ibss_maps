@@ -53,7 +53,7 @@ enso <- read.table("data/enso.txt", header=F)
 
 # creat lon and lat list
 lon.list <- seq(-178.75, 178.75, by=2.5)
-lat.list <- rev(seq(-88.75, 88.75, by=2.5))
+lat.list <- seq(-88.75, 88.75, by=2.5)
 
 ensoDF <- data.frame(rep(lon.list, each=length(lat.list)),
                      rep(lat.list, times=length(lon.list)),
