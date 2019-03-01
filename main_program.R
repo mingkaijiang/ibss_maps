@@ -177,6 +177,62 @@ pdf("output/drought_indices.pdf", width=12,height=8)
 plot_grid(p1, p2, labels="AUTO", ncol=1, align="v", axis="l")
 dev.off()
 
+
+
+### read in drought indices to plot
+dtDF2 <- read.table("data/indices_to_plot_drought_factors.txt", header=T)
+
+dtDF2$F1_cat <- ifelse(dtDF2$Factor1 <= -2, 1, 
+                       ifelse(dtDF2$Factor1 > -2 & dtDF2$Factor1 <= -1, 2,
+                              ifelse(dtDF2$Factor1 > -1 & dtDF2$Factor1 <= -0.1, 3, 
+                                     ifelse(dtDF2$Factor1 > -0.1 & dtDF2$Factor1 <= 0.1, 4, 
+                                            ifelse(dtDF2$Factor1 > 0.1 & dtDF2$Factor1 <= 1, 5, 
+                                                   ifelse(dtDF2$Factor1 > 1 & dtDF2$Factor1 <= 2, 6, 7))))))
+
+dtDF2$F2_cat <- ifelse(dtDF2$Factor2 <= -2, 1, 
+                        ifelse(dtDF2$Factor2 > -2 & dtDF2$Factor2 <= -1, 2,
+                               ifelse(dtDF2$Factor2 > -1 & dtDF2$Factor2 <= -0.1, 3, 
+                                      ifelse(dtDF2$Factor2 > -0.1 & dtDF2$Factor2 <= 0.1, 4, 
+                                             ifelse(dtDF2$Factor2 > 0.1 & dtDF2$Factor2 <= 1, 5, 
+                                                    ifelse(dtDF2$Factor2 > 1 & dtDF2$Factor2 <= 2, 6, 7))))))
+
+### plot precDF wet factor
+p1 <- ggplot() + 
+    geom_tile(data=precDF, aes(y=Lat, x=Lon, fill=as.character(precDF$prec_cat))) +
+    coord_quickmap(xlim=range(precDF$Lon), ylim=range(precDF$Lat))+
+    geom_point(data=dtDF2, aes(y=Lat, x=Lon, color=as.character(dtDF2$F1_cat)), size=3)+
+    scale_fill_manual(name="Rainfall (mm/yr)", 
+                      values=alpha(c("indianred4", "indianred1","thistle1", "skyblue", "blue"),0.2),
+                      label=c("0-100", "100-500", "500-2000", "2000-4000", ">4000"))+
+    scale_color_manual(name="Factor 1", 
+                       values=c("indianred4", "indianred3", "indianred1","thistle1", 
+                                "slateblue1","purple1",  "purple4"),
+                       label=c("< -2", "-2 to -1", "-1 to -0.1", "-0.1 to 0.1", 
+                               "0.1 to 1", "1 to 2", "> 2"))+
+    guides(fill=guide_legend(nrow=3), color=guide_legend(nrow=3))
+
+
+p2 <- ggplot() + 
+    geom_tile(data=ensoDF, aes(y=Lat, x=Lon, fill=as.character(ensoDF$enso_cat))) +
+    borders(colour = alpha("black", 0.8), lwd=0.2)+
+    coord_quickmap(xlim=range(precDF$Lon), ylim=range(precDF$Lat))+
+    geom_point(data=dtDF2, aes(y=Lat, x=Lon, color=as.character(dtDF2$F2_cat)), size=3)+
+    scale_fill_manual(name="ENSO index", 
+                      values=alpha(c("indianred4", "indianred1","thistle1","skyblue","blue"),0.2),
+                      label=c("-1 to -0.5", "-0.5 to -0.1", "-0.1 to 0.1", "0.1 to 0.5", "0.5 to 1"))+
+    scale_color_manual(name="Factor 2", 
+                       values=c("indianred4", "indianred3", "indianred1","thistle1", 
+                                "slateblue1","purple1",  "purple4"),
+                       label=c("< -2", "-2 to -1", "-1 to -0.1", "-0.1 to 0.1", 
+                               "0.1 to 1", "1 to 2", "> 2"))+
+    guides(fill=guide_legend(nrow=3), color=guide_legend(nrow=3))
+
+
+pdf("output/drought_factor_indices.pdf", width=12,height=8)
+plot_grid(p1, p2, labels="AUTO", ncol=1, align="v", axis="l")
+dev.off()
+
+
 ### read in tair df
 tairDF <- read.table("data/tair_annual.txt", header=F)
 colnames(tairDF) <- c("Lon", "Lat", "tair")
