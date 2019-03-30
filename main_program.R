@@ -389,3 +389,114 @@ dev.off()
 pdf("output/wet_factor_contingency_correlation.pdf")
 plot(p2)
 dev.off()
+
+
+
+#### new data
+## dry factor
+dtDF2 <- read.csv("data/new_dry_dryP_warm/new_dry.csv")
+
+dtDF2$F1_cat <- ifelse(dtDF2$dry <= -2, 1, 
+                       ifelse(dtDF2$dry > -2 & dtDF2$dry <= -1, 2,
+                              ifelse(dtDF2$dry > -1 & dtDF2$dry <= -0.1, 3, 
+                                     ifelse(dtDF2$dry > -0.1 & dtDF2$dry <= 0.1, 4, 
+                                            ifelse(dtDF2$dry > 0.1 & dtDF2$dry <= 1, 5, 
+                                                   ifelse(dtDF2$dry > 1 & dtDF2$dry <= 2, 6, 7))))))
+
+
+### plot precDF wet factor
+p1 <- ggplot() + 
+    geom_tile(data=precDF, aes(y=Lat, x=Lon, fill=as.character(precDF$prec_cat))) +
+    coord_quickmap(xlim=range(precDF$Lon), ylim=range(precDF$Lat))+
+    geom_point(data=dtDF2, aes(y=Lat, x=Lon, color=as.character(dtDF2$F1_cat)), size=3)+
+    scale_fill_manual(name="Rainfall (mm/yr)", 
+                      values=alpha(c("indianred4", "indianred1","thistle1", "skyblue", "blue"),0.2),
+                      label=c("0-100", "100-500", "500-2000", "2000-4000", ">4000"))+
+    scale_color_manual(name="Factor 1", 
+                       values=c("indianred4", "indianred3", "indianred1","thistle1", 
+                                "slateblue1","purple1",  "purple4"),
+                       label=c("< -2", "-2 to -1", "-1 to -0.1", "-0.1 to 0.1", 
+                               "0.1 to 1", "1 to 2", "> 2"))+
+    guides(fill=guide_legend(nrow=3), color=guide_legend(nrow=3))
+
+
+
+pdf("output/drought_factor_indices_new.pdf", width=12,height=8)
+plot(p1)
+dev.off()
+
+
+## dry predictability
+### read in predictability df
+predDF <- read.table("data/factors_to_plot_pred.txt", header=F)
+colnames(predDF) <- c("SCCSID", "Lat", "Lon", "dry", "wet")
+
+dryPDF <- read.csv("data/new_dry_dryP_warm/new_dryP.csv")
+
+### plot precDF wet factor
+p1 <- ggplot() + 
+    geom_tile(data=precDF, aes(y=Lat, x=Lon, fill=as.character(precDF$prec_cat))) +
+    coord_quickmap(xlim=range(precDF$Lon), ylim=range(precDF$Lat))+
+    geom_point(data=dryPDF, aes(y=Lat, x=Lon, color=dryP),size=3)+
+    scale_fill_manual(name="Rainfall (mm/yr)", 
+                      values=alpha(c("indianred4", "indianred1","thistle1", "skyblue", "blue"),0.2),
+                      label=c("0-100", "100-500", "500-2000", "2000-4000", ">4000"))+
+    scale_color_gradient2(name="dry predictability",
+                          low="blue", high="red")
+
+
+p2 <- ggplot() + 
+    geom_tile(data=ensoDF, aes(y=Lat, x=Lon, fill=as.character(ensoDF$enso_cat))) +
+    coord_quickmap(xlim=range(precDF$Lon), ylim=range(precDF$Lat))+
+    borders(colour = alpha("black", 0.8), lwd=0.2)+
+    geom_point(data=predDF, aes(y=Lat, x=Lon, color=wet),size=3)+
+    scale_fill_manual(name="ENSO index", 
+                      values=alpha(c("indianred4", "indianred1","thistle1","skyblue","blue"),0.2),
+                      label=c("-1 to -0.5", "-0.5 to -0.1", "-0.1 to 0.1", "0.1 to 0.5", "0.5 to 1"))+
+    scale_color_gradient2(name="wet predictability",
+                          low="red", high="blue")
+
+pdf("output/predictability_new.pdf", width=12,height=8)
+plot_grid(p1, p2, labels="AUTO", ncol=1, align="v", axis="l")
+dev.off()
+
+### warm
+warmDF <- read.csv("data/new_dry_dryP_warm/new_warm.csv")
+
+### plot tair cold
+p1 <- ggplot() + 
+    geom_tile(data=tairDF, aes(y=Lat, x=Lon, fill=tair), alpha=0.5) +
+    coord_quickmap(xlim=range(tairDF$Lon), ylim=range(tairDF$Lat))+
+    geom_point(data=coldDF, aes(y=Lat, x=Lon, color=cold),size=3)+
+    scale_fill_continuous(name="Temperature (degree)", 
+                          type="viridis")+
+    scale_color_gradient2(name="Cold factor", 
+                          low="red", high="blue")
+
+p2 <- ggplot() + 
+    geom_tile(data=tairDF, aes(y=Lat, x=Lon, fill=tair), alpha=0.5) +
+    coord_quickmap(xlim=range(tairDF$Lon), ylim=range(tairDF$Lat))+
+    geom_point(data=warmDF, aes(y=Lat, x=Lon, color=su),size=3)+
+    scale_fill_continuous(name="Temperature (degree)", 
+                          type="viridis")+
+    scale_color_gradient2(name="SU", 
+                          low="blue", high="red")
+
+
+pdf("output/cold_warm_factor_new_su.pdf", width=12,height=8)
+plot_grid(p1, p2, labels="AUTO", ncol=1, align="v", axis="l")
+dev.off()
+
+p2 <- ggplot() + 
+    geom_tile(data=tairDF, aes(y=Lat, x=Lon, fill=tair), alpha=0.5) +
+    coord_quickmap(xlim=range(tairDF$Lon), ylim=range(tairDF$Lat))+
+    geom_point(data=warmDF, aes(y=Lat, x=Lon, color=wsdi),size=3)+
+    scale_fill_continuous(name="Temperature (degree)", 
+                          type="viridis")+
+    scale_color_gradient2(name="WSDI", 
+                          low="blue", high="red")
+
+
+pdf("output/cold_warm_factor_new_wsdi.pdf", width=12,height=8)
+plot_grid(p1, p2, labels="AUTO", ncol=1, align="v", axis="l")
+dev.off()
