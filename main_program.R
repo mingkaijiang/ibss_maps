@@ -501,9 +501,10 @@ p2 <- ggplot() +
     geom_point(data=warmDF, aes(y=Lat, x=Lon, color=su),size=3)+
     scale_fill_continuous(name="Temperature (degree)", 
                           type="viridis")+
-    scale_color_gradient2(name="SU", 
-                          low="blue", high="red")
+    scale_color_continuous(name="SU", 
+                          low="blue3", high="red")
 
+plot(p2)
 
 pdf("output/cold_warm_factor_new_su.pdf", width=12,height=8)
 plot_grid(p1, p2, labels="AUTO", ncol=1, align="v", axis="l")
@@ -515,8 +516,8 @@ p2 <- ggplot() +
     geom_point(data=warmDF, aes(y=Lat, x=Lon, color=wsdi),size=3)+
     scale_fill_continuous(name="Temperature (degree)", 
                           type="viridis")+
-    scale_color_gradient2(name="WSDI", 
-                          low="blue", high="red")
+    scale_color_continuous(name="WSDI", 
+                          low="blue3", high="red")
 
 
 pdf("output/cold_warm_factor_new_wsdi.pdf", width=12,height=8)
