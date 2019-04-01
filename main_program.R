@@ -408,17 +408,16 @@ dtDF2$F1_cat <- ifelse(dtDF2$dry <= -2, 1,
 p1 <- ggplot() + 
     geom_tile(data=precDF, aes(y=Lat, x=Lon, fill=as.character(precDF$prec_cat))) +
     coord_quickmap(xlim=range(precDF$Lon), ylim=range(precDF$Lat))+
-    geom_point(data=dtDF2, aes(y=Lat, x=Lon, color=as.character(dtDF2$F1_cat)), size=3)+
     scale_fill_manual(name="Rainfall (mm/yr)", 
                       values=alpha(c("indianred4", "indianred1","thistle1", "skyblue", "blue"),0.2),
                       label=c("0-100", "100-500", "500-2000", "2000-4000", ">4000"))+
+    geom_point(data=dtDF2, aes(y=Lat, x=Lon,color=as.character(dtDF2$F1_cat)), size=3)+
     scale_color_manual(name="Factor 1", 
-                       values=c("indianred4", "indianred3", "indianred1","thistle1", 
+                       values=c("indianred4", "indianred3", "indianred1","grey", 
                                 "slateblue1","purple1",  "purple4"),
                        label=c("< -2", "-2 to -1", "-1 to -0.1", "-0.1 to 0.1", 
                                "0.1 to 1", "1 to 2", "> 2"))+
     guides(fill=guide_legend(nrow=3), color=guide_legend(nrow=3))
-
 
 
 pdf("output/drought_factor_indices_new.pdf", width=12,height=8)
@@ -433,28 +432,51 @@ colnames(predDF) <- c("SCCSID", "Lat", "Lon", "dry", "wet")
 
 dryPDF <- read.csv("data/new_dry_dryP_warm/new_dryP.csv")
 
+dryPDF$dryP_cat <- ifelse(dryPDF$dryP <= -2, 1, 
+                       ifelse(dryPDF$dryP > -2 & dryPDF$dryP <= -1, 2,
+                              ifelse(dryPDF$dryP > -1 & dryPDF$dryP <= -0.1, 3, 
+                                     ifelse(dryPDF$dryP > -0.1 & dryPDF$dryP <= 0.1, 4, 
+                                            ifelse(dryPDF$dryP > 0.1 & dryPDF$dryP <= 1, 5, 
+                                                   ifelse(dryPDF$dryP > 1 & dryPDF$dryP <= 2, 6, 7))))))
+
+
+predDF$wet_cat <- ifelse(predDF$wet <= -2, 1, 
+                          ifelse(predDF$wet > -2 & predDF$wet <= -1, 2,
+                                 ifelse(predDF$wet > -1 & predDF$wet <= -0.1, 3, 
+                                        ifelse(predDF$wet > -0.1 & predDF$wet <= 0.1, 4, 
+                                               ifelse(predDF$wet > 0.1 & predDF$wet <= 1, 5, 
+                                                      ifelse(predDF$wet > 1 & predDF$wet <= 2, 6, 7))))))
+
 ### plot precDF wet factor
 p1 <- ggplot() + 
     geom_tile(data=precDF, aes(y=Lat, x=Lon, fill=as.character(precDF$prec_cat))) +
     coord_quickmap(xlim=range(precDF$Lon), ylim=range(precDF$Lat))+
-    geom_point(data=dryPDF, aes(y=Lat, x=Lon, color=dryP),size=3)+
+    geom_point(data=dryPDF, aes(y=Lat, x=Lon, color=as.factor(dryPDF$dryP_cat)),size=3)+
     scale_fill_manual(name="Rainfall (mm/yr)", 
                       values=alpha(c("indianred4", "indianred1","thistle1", "skyblue", "blue"),0.2),
                       label=c("0-100", "100-500", "500-2000", "2000-4000", ">4000"))+
-    scale_color_gradient2(name="dry predictability",
-                          low="blue", high="red")
-
+    #scale_color_gradient2(name="dry predictability",
+    #                      low="blue", high="red")
+    scale_color_manual(name="dry predictability", 
+                       values=c("purple4","purple1","slateblue1","grey","indianred1","indianred3","indianred4"),
+                       label=c("< -2", "-2 to -1", "-1 to -0.1", "-0.1 to 0.1", 
+                               "0.1 to 1", "1 to 2", "> 2"))
 
 p2 <- ggplot() + 
     geom_tile(data=ensoDF, aes(y=Lat, x=Lon, fill=as.character(ensoDF$enso_cat))) +
     coord_quickmap(xlim=range(precDF$Lon), ylim=range(precDF$Lat))+
     borders(colour = alpha("black", 0.8), lwd=0.2)+
-    geom_point(data=predDF, aes(y=Lat, x=Lon, color=wet),size=3)+
+    geom_point(data=predDF, aes(y=Lat, x=Lon, color=as.factor(predDF$wet_cat)),size=3)+
     scale_fill_manual(name="ENSO index", 
                       values=alpha(c("indianred4", "indianred1","thistle1","skyblue","blue"),0.2),
                       label=c("-1 to -0.5", "-0.5 to -0.1", "-0.1 to 0.1", "0.1 to 0.5", "0.5 to 1"))+
-    scale_color_gradient2(name="wet predictability",
-                          low="red", high="blue")
+    #scale_color_gradient2(name="wet predictability",
+    #                      low="red", high="blue")+
+    scale_color_manual(name="wet predictability", 
+                       values=c("indianred4", "indianred3", "indianred1","grey", 
+                                "slateblue1","purple1",  "purple4"),
+                       label=c("< -2", "-2 to -1", "-1 to -0.1", "-0.1 to 0.1", 
+                               "0.1 to 1", "1 to 2", "> 2"))
 
 pdf("output/predictability_new.pdf", width=12,height=8)
 plot_grid(p1, p2, labels="AUTO", ncol=1, align="v", axis="l")
