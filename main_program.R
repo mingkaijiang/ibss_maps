@@ -523,3 +523,34 @@ p2 <- ggplot() +
 pdf("output/cold_warm_factor_new_wsdi.pdf", width=12,height=8)
 plot_grid(p1, p2, labels="AUTO", ncol=1, align="v", axis="l")
 dev.off()
+
+
+
+### read in prec data as background plot
+precDF <- read.table("data/prec_annual.txt", header=F)
+colnames(precDF) <- c("Lon", "Lat", "prec")
+
+precDF$prec_cat <- ifelse(precDF$prec <= 100, 1, 
+                          ifelse(precDF$prec > 100 & precDF$prec <= 500, 2,
+                                 ifelse(precDF$prec > 500 & precDF$prec <= 2000, 3, 
+                                        ifelse(precDF$prec > 2000 & precDF$prec <= 4000, 4, 5))))
+
+
+
+### read in predictability df
+siteDF <- read.csv("data/SCCSlocation.csv")
+siteDF$site <- "1"
+
+p1 <- ggplot() + 
+    geom_tile(data=precDF, aes(y=Lat, x=Lon, fill=as.character(precDF$prec_cat))) +
+    coord_quickmap(xlim=range(precDF$Lon), ylim=range(precDF$Lat))+
+    geom_point(data=siteDF, aes(y=Latitude, x=Longitude), color="orange", size=3)+
+    scale_fill_manual(name="Rainfall (mm/yr)", 
+                      values=alpha(c("indianred4", "indianred1","thistle1", "skyblue", "blue"),0.2),
+                      label=c("0-100", "100-500", "500-2000", "2000-4000", ">4000"))+
+    theme(legend.position="right")+
+    guides(fill=guide_legend(nrow=3), color=guide_legend(nrow=3))
+
+pdf("output/site_map.pdf", width=12,height=8)
+plot(p1)
+dev.off()
